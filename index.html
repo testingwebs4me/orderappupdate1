@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Beverage Order</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #1a1a1a;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 480px;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+            border-radius: 20px;
+            margin: 0 auto 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .logo svg {
+            width: 36px;
+            height: 36px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+
+        .location-info {
+            text-align: center;
+            background: linear-gradient(135deg, #f5f5f5 0%, #f0f0f0 100%);
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 36px;
+            font-size: 14px;
+            color: #4a4a4a;
+            border: 1px solid #e5e5e5;
+            font-weight: 500;
+        }
+
+        .beverage-section {
+            margin-bottom: 32px;
+        }
+
+        .beverage-category {
+            background: #fafafa;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .beverage-category::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(26, 26, 26, 0.02) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .beverage-category:hover::before {
+            opacity: 1;
+        }
+
+        .beverage-category.active {
+            border-color: #1a1a1a;
+            background: #f5f5f5;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .category-icon {
+            width: 56px;
+            height: 56px;
+            background: white;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .beverage-category.active .category-icon {
+            background: #1a1a1a;
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .category-icon svg {
+            width: 30px;
+            height: 30px;
+            transition: all 0.3s ease;
+            fill: #1a1a1a;
+        }
+
+        .beverage-category.active .category-icon svg {
+            fill: white;
+        }
+
+        .category-info {
+            flex: 1;
+        }
+
+        .category-name {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 4px;
+            color: #1a1a1a;
+        }
+
+        .category-desc {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .category-toggle {
+            width: 28px;
+            height: 28px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .beverage-category.active .category-toggle {
+            background: #1a1a1a;
+            border-color: #1a1a1a;
+            transform: rotate(180deg);
+        }
+
+        .category-toggle svg {
+            width: 16px;
+            height: 16px;
+            transition: all 0.3s ease;
+            fill: #6b7280;
+        }
+
+        .beverage-category.active .category-toggle svg {
+            fill: white;
+        }
+
+        .options-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .beverage-category.active .options-container {
+            max-height: 500px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .option-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .option-item:hover {
+            background: #fafafa;
+            transform: translateX(4px);
+        }
+
+        .option-item.selected {
+            background: #f0f0f0;
+            border-color: #1a1a1a;
+        }
+
+        .option-item input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .option-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            margin-right: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .option-item.selected .option-checkbox {
+            background: #1a1a1a;
+            border-color: #1a1a1a;
+        }
+
+        .option-checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.2s ease;
+        }
+
+        .option-item.selected .option-checkbox::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .option-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            padding: 18px 28px;
+            border-radius: 14px;
+            font-weight: 600;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+            min-width: 240px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .message.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .message.success {
+            background: #10b981;
+            color: white;
+        }
+
+        .message.error {
+            background: #ef4444;
+            color: white;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .order-summary {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            display: none;
+            border: 1px solid #e5e5e5;
+        }
+
+        .order-summary.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .summary-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .summary-item {
+            color: #6b7280;
+            margin-left: 16px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 520px) {
+            .container {
+                padding: 36px 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .category-icon {
+                width: 48px;
+                height: 48px;
+            }
+
+            .category-icon svg {
+                width: 26px;
+                height: 26px;
+            }
+
+            .category-name {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <svg viewBox="0 0 24 24" fill="white">
+                <path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.9 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/>
+            </svg>
+        </div>
+        <h1 id="deskTitle">Order Beverages</h1>
+        <p class="subtitle">Select your drinks for delivery</p>
+        <div class="location-info" id="locationInfo">Loading location...</div>
+
+        <form id="orderForm">
+            <div class="beverage-section">
+                <!-- Coffee Category -->
+                <div class="beverage-category" id="coffeeCategory">
+                    <div class="category-header" onclick="toggleCategory('coffee')">
+                        <div class="category-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M18.5,3H6C4.9,3,4,3.9,4,5v5.71c0,3.83,2.95,7.18,6.78,7.29c3.96,0.12,7.22-3.06,7.22-7v-1h0.5c1.93,0,3.5-1.57,3.5-3.5S20.43,3,18.5,3z M16,5v3H6V5H16z M16,10v1c0,2.76-2.24,5-5,5s-5-2.24-5-5v-1H16z M18.5,8H18V5h0.5C19.33,5,20,5.67,20,6.5S19.33,8,18.5,8z M4,19h16v2H4V19z"/>
+                            </svg>
+                        </div>
+                        <div class="category-info">
+                            <div class="category-name">Coffee</div>
+                            <div class="category-desc">Premium coffee selections</div>
+                        </div>
+                        <div class="category-toggle">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M7 10l5 5 5-5z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="options-container">
+                        <label class="option-item" for="blackCoffee">
+                            <input type="checkbox" id="blackCoffee" name="coffee" value="Black Coffee">
+                            <div class="option-checkbox"></div>
+                            <div class="option-name">Black Coffee</div>
+                        </label>
+                        <label class="option-item" for="iceBlackCoffee">
+                            <input type="checkbox" id="iceBlackCoffee" name="coffee" value="Iced Black Coffee">
+                            <div class="option-checkbox"></div>
+                            <div class="option-name">Iced Black Coffee</div>
+                        </label>
+                        <label class="option-item" for="latte">
+                            <input type="checkbox" id="latte" name="coffee" value="Latte">
+                            <div class="option-checkbox"></div>
+                            <div class="option-name">Latte</div>
+                        </label>
+                        <label class="option-item" for="cappuccino">
+                            <input type="checkbox" id="cappuccino" name="coffee" value="Cappuccino">
+                            <div class="option-checkbox"></div>
+                            <div class="option-name">Cappuccino</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Tea Category -->
+                <div class="beverage-category" id="teaCategory">
+                    <div class="category-header" onclick="toggleCategory('tea')">
+                        <div class="category-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M20,8h-1V5c0-1.1-0.9-2-2-2H5C3.9,3,3,3.9,3,5v9c0,2.21,1.79,4,4,4h6c2.21,0,4-1.79,4-4v-1h1c1.66,0,3-1.34,3-3S21.66,8,20,8z M5,5h10c0,0,0,0.01,0,0.01V8H5V5z M15,14c0,1.1-0.9,2-2,2H7c-1.1,0-2-0.9-2-2v-4h10V14z M20,11h-3v-1h3c0.55,0,1,0.45,1,1S20.55,11,20,11z M3,19h16v2H3V19z"/>
+                            </svg>
+                        </div>
+                        <div class="category-info">
+                            <div class="category-name">Tea</div>
+                            <div class="category-desc">Fine tea selections</div>
+                        </div>
+                        <div class="category-toggle">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M7 10l5 5 5-5z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="options-container">
+                        <label class="option-item" for="khadeerBlack">
+                            <input type="checkbox" id="khadeerBlack" name="tea" value="Khadeer Black">
+                            <div class="option-checkbox"></div>
+                            <div class="option-name">Khadeer Black</div>
+                        </label>
+                        <label class="option-item" for="khadeerEnglish">
+                            <input type="checkbox" id="khadeerEnglish" name="tea" value="Khadeer English">
+                            <div class="option-checkbox"></div>
+                            <div class="option-name">Khadeer English</div>
+                        </label>
+                        <label class="option-item" for="khadeerGreen">
+                            <input type="checkbox" id="khadeerGreen" name="tea" value="Khadeer Green">
+                            <div class="option-checkbox"></div>
+                            <div class="option-name">Khadeer Green</div>
+                        </label>
+                        <label class="option-item" for="liptonBlack">
+                            <input type="checkbox" id="liptonBlack" name="tea" value="Lipton Black">
+                            <div class="option-checkbox"></div>
+                            <div class="option-name">Lipton Black</div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-summary" id="orderSummary">
+                <div class="summary-title">Your Order:</div>
+                <div id="summaryContent"></div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                Submit Order
+            </button>
+        </form>
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <script>
+        // CONFIGURATION - Update this with your webhook URL
+        const WEBHOOK_URL = 'https://hook.eu2.make.com/65yk86m3f2693ntya30ecusmxu7fuvfl';
+        
+        // Tea boy configuration
+        const teaBoyConfig = {
+            'TB001': {
+                name: 'Ahmed',
+                location: 'Building A - Floor 2',
+                desks: [1, 2, 3, 4, 5],
+                telegram: '@ahmed_teaboy' // Add telegram handle
+            },
+            'TB002': {
+                name: 'Mohammed', 
+                location: 'Building B - Floor 1',
+                desks: [6, 7, 8, 9, 10],
+                telegram: '@mohammed_teaboy' // Add telegram handle
+            }
+        };
+
+        // Get parameters from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const deskId = parseInt(urlParams.get('desk')) || 1;
+        
+        // Determine which tea boy based on desk number
+        let teaBoyId = 'TB001';
+        let teaBoyInfo = null;
+        
+        for (const [id, info] of Object.entries(teaBoyConfig)) {
+            if (info.desks.includes(deskId)) {
+                teaBoyId = id;
+                teaBoyInfo = info;
+                break;
+            }
+        }
+        
+        // Update UI with desk and tea boy info
+        document.getElementById('deskTitle').textContent = `Desk #${deskId} – Order Beverages`;
+        document.getElementById('locationInfo').textContent = 
+            `${teaBoyInfo.location} • Tea Boy: ${teaBoyInfo.name}`;
+
+        // Toggle category function
+        function toggleCategory(category) {
+            const categoryEl = document.getElementById(category + 'Category');
+            categoryEl.classList.toggle('active');
+        }
+
+        // Handle option selection
+        const optionItems = document.querySelectorAll('.option-item');
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+        checkboxes.forEach((checkbox) => {
+            checkbox.addEventListener('change', function() {
+                const optionItem = this.closest('.option-item');
+                if (this.checked) {
+                    optionItem.classList.add('selected');
+                } else {
+                    optionItem.classList.remove('selected');
+                }
+                updateOrderSummary();
+            });
+        });
+
+        // Update order summary
+        function updateOrderSummary() {
+            const selectedItems = [];
+            const coffeeItems = document.querySelectorAll('input[name="coffee"]:checked');
+            const teaItems = document.querySelectorAll('input[name="tea"]:checked');
+            
+            if (coffeeItems.length > 0) {
+                const coffeeList = Array.from(coffeeItems).map(item => item.value);
+                selectedItems.push(`Coffee: ${coffeeList.join(', ')}`);
+            }
+            
+            if (teaItems.length > 0) {
+                const teaList = Array.from(teaItems).map(item => item.value);
+                selectedItems.push(`Tea: ${teaList.join(', ')}`);
+            }
+            
+            const summaryEl = document.getElementById('orderSummary');
+            const summaryContent = document.getElementById('summaryContent');
+            
+            if (selectedItems.length > 0) {
+                summaryEl.classList.add('show');
+                summaryContent.innerHTML = selectedItems.map(item => 
+                    `<div class="summary-item">• ${item}</div>`
+                ).join('');
+            } else {
+                summaryEl.classList.remove('show');
+            }
+        }
+
+        // Handle form submission
+        const form = document.getElementById('orderForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const messageEl = document.getElementById('message');
+
+        function showMessage(text, type) {
+            messageEl.textContent = text;
+            messageEl.className = `message ${type} show`;
+            
+            setTimeout(() => {
+                messageEl.classList.remove('show');
+            }, 4000);
+        }
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get selected items
+            const coffeeItems = Array.from(document.querySelectorAll('input[name="coffee"]:checked'))
+                .map(cb => cb.value);
+            const teaItems = Array.from(document.querySelectorAll('input[name="tea"]:checked'))
+                .map(cb => cb.value);
+
+            const allItems = [...coffeeItems, ...teaItems];
+
+            if (allItems.length === 0) {
+                showMessage('Please select at least one beverage', 'error');
+                return;
+            }
+
+            // Prepare order data
+            const orderData = {
+                desk: deskId,
+                items: allItems,
+                coffee_items: coffeeItems,
+                tea_items: teaItems,
+                teaboy: teaBoyId,
+                teaboy_name: teaBoyInfo.name,
+                teaboy_telegram: teaBoyInfo.telegram,
+                location: teaBoyInfo.location,
+                timestamp: new Date().toISOString(),
+                order_time: new Date().toLocaleTimeString(),
+                order_date: new Date().toLocaleDateString()
+            };
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Submitting Order<span class="loading"></span>';
+
+            try {
+                // Send to Make.com webhook
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                if (response.ok) {
+                    showMessage('Order sent successfully! ✓', 'success');
+                    // Reset form
+                    form.reset();
+                    optionItems.forEach(item => item.classList.remove('selected'));
+                    document.querySelectorAll('.beverage-category').forEach(cat => 
+                        cat.classList.remove('active')
+                    );
+                    updateOrderSummary();
+                } else {
+                    throw new Error('Failed to submit order');
+                }
+            } catch (error) {
+                showMessage('Error: Could not submit order', 'error');
+                console.error('Order submission error:', error);
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Order';
+            }
+        });
+    </script>
+</body>
+</html>
